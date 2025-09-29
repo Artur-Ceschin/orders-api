@@ -1,18 +1,18 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { randomUUID } from 'node:crypto';
 import {
   SendMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
+import { Order } from '../entities/Order';
 
 export class PlaceOrder {
   async execute() {
     const customerEmail = 'artur.ceschin@gmail.com';
     const amount = Math.ceil(Math.random() * 1000);
-    const orderId = randomUUID();
 
+    const order = new Order(customerEmail, amount);
 
     //Save on database
     const dbClient = DynamoDBDocumentClient.from(
@@ -22,11 +22,7 @@ export class PlaceOrder {
     );
     const putItemCommand = new PutCommand({
       TableName: 'Orders',
-      Item: {
-        key: orderId,
-        email: customerEmail,
-        amount,
-      },
+      Item: order,
     });
 
     await dbClient.send(putItemCommand);
@@ -36,7 +32,7 @@ export class PlaceOrder {
     const sendMessageCommand = new SendMessageCommand({
       QueueUrl:
         'https://sqs.us-east-1.amazonaws.com/058264487329/ProcessPaymentQueue',
-      MessageBody: JSON.stringify({ orderId }),
+      MessageBody: JSON.stringify({ order: order.id }),
     });
 
     await sqsClient.send(sendMessageCommand);
@@ -52,7 +48,7 @@ export class PlaceOrder {
       Message: {
         Subject: {
           Charset: 'utf-8',
-          Data: 'Order placed successfully',
+          Data: `Order placed successfully number: ${order.id}`,
         },
         Body: {
           Html: {
@@ -72,6 +68,6 @@ export class PlaceOrder {
 
     await sesClient.send(sendEmailCommand);
 
-    return { orderId };
+    return { orderId: order.id };
   }
 }

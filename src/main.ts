@@ -1,5 +1,5 @@
 import fastify from 'fastify';
-import { PlaceOrder } from './useCases/PlaceOrder.js';
+import { PlaceOrder } from './useCases/PlaceOrder';
 
 const app = fastify();
 
