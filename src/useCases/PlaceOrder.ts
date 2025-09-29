@@ -5,21 +5,23 @@ import { DynamoOrdersRepository } from '../repository/DynamoOrdersRepository';
 import { Order } from '../entities/Order';
 
 export class PlaceOrder {
+  constructor(
+    private readonly dynamoOrdersRepository: DynamoOrdersRepository,
+    private readonly sqsGateway: SQSGateway,
+    private readonly sesGateway: SESGateway,
+  ) {}
+
   async execute() {
+
     const customerEmail = 'artur.ceschin@gmail.com';
     const amount = Math.ceil(Math.random() * 1000);
 
     const order = new Order(customerEmail, amount);
-    const dynamoOrdersRepository = new DynamoOrdersRepository();
-    await dynamoOrdersRepository.create(order);
+    await this.dynamoOrdersRepository.create(order);
+    await this.sqsGateway.plublicMesage({ order: order.id });
 
-    const sqsGateway = new SQSGateway();
-    await sqsGateway.plublicMesage({ order: order.id });
-
-    const sesGateway = new SESGateway();
-
-    await sesGateway.sendEmail({
-      from: 'Artur Ceschin <noreply@arturceschin.com>',
+    await this.sesGateway.sendEmail({
+      from: 'artur.ceschin@gmail.com',
       to: [customerEmail],
       subject: `Order placed successfully number: ${order.id}`,
       html: `

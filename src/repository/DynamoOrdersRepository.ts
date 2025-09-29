@@ -10,7 +10,11 @@ export class DynamoOrdersRepository {
   async create(order: Order) {
     const putItemCommand = new PutCommand({
       TableName: 'Orders',
-      Item: order,
+      Item: {
+        key: order.id,
+        email: order.email,
+        amount: order.amount,
+      },
     });
 
     await this.client.send(putItemCommand);
