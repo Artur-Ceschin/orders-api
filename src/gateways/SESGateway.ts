@@ -1,4 +1,5 @@
 import { SendEmailCommand, SESClient } from '@aws-sdk/client-ses';
+import { IEmailGateway } from 'Interfaces/gateways/IEmailGateway';
 
 
 interface ISendEmailParams {
@@ -8,7 +9,7 @@ interface ISendEmailParams {
   html: string;
 }
 
-export class SESGateway {
+export class SESGateway implements IEmailGateway{
   private client = new SESClient({ region: 'us-east-1' });
 
   async sendEmail({ from, to, subject, html} : ISendEmailParams) {

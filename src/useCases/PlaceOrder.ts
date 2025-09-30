@@ -1,26 +1,29 @@
 
-import { SESGateway } from '../gateways/SESGateway';
-import { SQSGateway } from '../gateways/SQSGateway';
-import { DynamoOrdersRepository } from '../repository/DynamoOrdersRepository';
+
 import { Order } from '../entities/Order';
+import { IOrdersRepository } from 'Interfaces/repositories/IOrderRepository';
+import { IQueueGateway } from 'Interfaces/gateways/IQueueGateway';
+import { IEmailGateway } from 'Interfaces/gateways/IEmailGateway';
+
 
 export class PlaceOrder {
   constructor(
-    private readonly dynamoOrdersRepository: DynamoOrdersRepository,
-    private readonly sqsGateway: SQSGateway,
-    private readonly sesGateway: SESGateway,
+    private readonly ordersRepository: IOrdersRepository,
+    private readonly queueGateway: IQueueGateway,
+    private readonly emailGateway: IEmailGateway,
   ) {}
 
   async execute() {
-
     const customerEmail = 'artur.ceschin@gmail.com';
     const amount = Math.ceil(Math.random() * 1000);
 
     const order = new Order(customerEmail, amount);
-    await this.dynamoOrdersRepository.create(order);
-    await this.sqsGateway.plublicMesage({ order: order.id });
 
-    await this.sesGateway.sendEmail({
+    await this.ordersRepository.create(order);
+
+    await this.queueGateway.publicMessage({ order: order.id });
+
+    await this.emailGateway.sendEmail({
       from: 'artur.ceschin@gmail.com',
       to: [customerEmail],
       subject: `Order placed successfully number: ${order.id}`,
