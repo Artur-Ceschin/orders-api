@@ -1,13 +1,14 @@
-import { makePlaceOrder } from 'factories/makePlaceOrder';
+import { container } from './di/container';
 import fastify from 'fastify';
+
+import { PlaceOrder } from './useCases/PlaceOrder';
 const app = fastify();
 
 app.post('/checkout', async (request, reply) => {
 
-  const placeOrder = makePlaceOrder();
+  const placeOrder = new PlaceOrder(container);
 
   const { orderId } = await placeOrder.execute();
-
   reply.status(201).send({ orderId });
 });
 
