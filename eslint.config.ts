@@ -17,7 +17,13 @@ export default defineConfig([
       'no-trailing-spaces': 'error',
       'eol-last': 'error',
       'no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
-  tseslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ]);
