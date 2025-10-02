@@ -1,8 +1,10 @@
 import { Order } from '../entities/Order';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { IOrdersRepository } from 'Interfaces/repositories/IOrderRepository';
+import { Injectable } from '../di/Injectable';
+import { IOrdersRepository } from '../Interfaces/repositories/IOrderRepository';
 
+@Injectable()
 export class DynamoOrdersRepository implements IOrdersRepository {
   private client = DynamoDBDocumentClient.from(
     new DynamoDBClient({ region: 'us-east-1' }),

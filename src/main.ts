@@ -1,13 +1,13 @@
-import { container } from './di/container';
 import fastify from 'fastify';
 import { DynamoOrdersRepository } from './repository/DynamoOrdersRepository';
 import { PlaceOrder } from './useCases/PlaceOrder';
-import { SESGateway } from './gateways/SESGateway';
 import { SQSGateway } from './gateways/SQSGateway';
+import { SESGateway } from './gateways/SESGateway';
+import { Registry } from './di/Registry';
 const app = fastify();
 
 app.post('/checkout', async (request, reply) => {
-
+  const container = Registry.getInstance();
   const placeOrder = new PlaceOrder(
     container.resolve(DynamoOrdersRepository),
     container.resolve(SQSGateway),
