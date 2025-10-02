@@ -4,11 +4,14 @@ import { Order } from '../entities/Order';
 import { IOrdersRepository } from 'Interfaces/repositories/IOrderRepository';
 import { IQueueGateway } from 'Interfaces/gateways/IQueueGateway';
 import { IEmailGateway } from 'Interfaces/gateways/IEmailGateway';
-import { DIContainer } from 'di/Registry';
 
 
 export class PlaceOrder {
-  constructor(private readonly container: DIContainer) {}
+  constructor(
+    private readonly ordersRepository: IOrdersRepository,
+    private readonly queueGateway: IQueueGateway,
+    private readonly emailGateway: IEmailGateway,
+  ) {}
 
   async execute() {
     const customerEmail = 'artur.ceschin@gmail.com';
@@ -16,11 +19,11 @@ export class PlaceOrder {
 
     const order = new Order(customerEmail, amount);
 
-    await this.container.resolve<IOrdersRepository>('OrdersRepository').create(order);
+    await this.ordersRepository.create(order);
 
-    await this.container.resolve<IQueueGateway>('QueueGateway').publicMessage({ order: order.id });
+    await this.queueGateway.publicMessage({ order: order.id });
 
-    await this.container.resolve<IEmailGateway>('EmailGateway').sendEmail({
+    await this.emailGateway.sendEmail({
       from: 'artur.ceschin@gmail.com',
       to: [customerEmail],
       subject: `Order placed successfully number: ${order.id}`,

@@ -1,15 +1,13 @@
-
-
 type Constructor<T> = new (...args: any[]) => T
 
-export interface DIContainer {
-  register<T>(token: string, implementation: Constructor<T>): void;
-  resolve<T>(token: string): T;
-}
 
-export class Registry implements DIContainer {
+export class Registry {
 
   private static instance: Registry;
+
+  private readonly services: Map<string, Constructor<any>> = new Map();
+
+  private constructor() {}
 
   static getInstance() {
     if(!Registry.instance) {
@@ -19,21 +17,18 @@ export class Registry implements DIContainer {
     return Registry.instance;
   }
 
+  register<T>(implementation: Constructor<T>) {
+    const token = implementation.name;
 
-  private readonly services: Map<string, Constructor<any>> = new Map();
-
-  private constructor() {}
-
-  register<T>(token: string, implementation: Constructor<T>) {
     if(this.services.has(token)) {
       throw new Error(`${token} is already registered`);
     }
 
-    this.services.set(token, implementation);
+    this.services.set(implementation.name, implementation);
   }
 
-  resolve<T>(token: string): T {
-
+  resolve<T>(implementation: Constructor<T>): T {
+    const token = implementation.name;
     const impl = this.services.get(token);
 
     if(!impl) {

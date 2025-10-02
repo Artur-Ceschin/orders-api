@@ -5,7 +5,7 @@ import { SQSGateway } from '../gateways/SQSGateway';
 
 export const container = Registry.getInstance();
 
-container.register('OrdersRepository', DynamoOrdersRepository);
-container.register('QueueGateway', SQSGateway);
-container.register('EmailGateway', SESGateway);
+container.register( DynamoOrdersRepository);
+container.register(SQSGateway);
+container.register(SESGateway);
 
