@@ -9,7 +9,7 @@ export class SQSGateway implements IQueueGateway {
 
   async publicMessage(message: Record<string, unknown>) {
     const sendMessageCommand = new SendMessageCommand({
-      QueueUrl: 'https://sqs.us-east-1.amazonaws.com/058264487329/ProcessPaymentQueue',
+      QueueUrl: 'https://sqs.us-east-1.amazonaws.com/YOUR_ACCOUNT_ID/ProcessPaymentQueue',
       MessageBody: JSON.stringify(message),
     });
 

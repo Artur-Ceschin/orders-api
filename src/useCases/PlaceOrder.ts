@@ -16,7 +16,7 @@ export class PlaceOrder {
   ) {}
 
   async execute() {
-    const customerEmail = 'artur.ceschin@gmail.com';
+    const customerEmail = 'customer@example.com';
     const amount = Math.ceil(Math.random() * 1000);
 
     const order = new Order(customerEmail, amount);
@@ -26,7 +26,7 @@ export class PlaceOrder {
     await this.queueGateway.publicMessage({ order: order.id });
 
     await this.emailGateway.sendEmail({
-      from: 'artur.ceschin@gmail.com',
+      from: 'noreply@example.com',
       to: [customerEmail],
       subject: `Order placed successfully number: ${order.id}`,
       html: `
