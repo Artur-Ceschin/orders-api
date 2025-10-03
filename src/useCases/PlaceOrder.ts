@@ -10,9 +10,9 @@ import { Inject } from '../di/Inject';
 @Injectable()
 export class PlaceOrder {
   constructor(
-    @Inject('OrdersRepository') private readonly ordersRepository: IOrdersRepository,
-    @Inject('QueueGateway') private readonly queueGateway: IQueueGateway,
-    @Inject('EmailGateway') private readonly emailGateway: IEmailGateway,
+    @Inject('DynamoOrdersRepository') private readonly ordersRepository: IOrdersRepository,
+    @Inject('SQSGateway') private readonly queueGateway: IQueueGateway,
+    @Inject('SESGateway') private readonly emailGateway: IEmailGateway,
   ) {}
 
   async execute() {

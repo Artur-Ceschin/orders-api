@@ -1,13 +1,6 @@
-import { PlaceOrder } from 'useCases/PlaceOrder';
-import { makeDynamoOrderRepository } from './createDynamoRepository';
-import { makeSESGateway } from './makeSESGateway';
-import { makeSQSGateway } from './makeSQSGateway';
-
+import { PlaceOrder } from '../useCases/PlaceOrder';
+import { Registry } from '../di/Registry';
 
 export function makePlaceOrder() {
-  return new PlaceOrder(
-    makeDynamoOrderRepository(),
-    makeSQSGateway(),
-    makeSESGateway(),
-  );
+  return Registry.getInstance().resolve<PlaceOrder>('PlaceOrder');
 }

@@ -36,42 +36,20 @@ export class Registry {
     this.tokens.set(token, implementation);
   }
 
-  resolve<T>(implementation: Constructor<T>): T {
-    const token = implementation.name;
-    const impl = this.services.get(token);
+  resolve<T>(token: string): T {
+    const implementation = this.services.get(token);
 
-    if(!impl) {
+    if (!implementation) {
       throw new Error(`${token} was not found in the registry`);
     }
 
-    return this.createInstance(impl);
-  }
-
-  resolveByToken<T>(token: string): T {
-    const impl = this.tokens.get(token);
-
-    if(!impl) {
-      throw new Error(`${token} was not found in the registry`);
-    }
-
-    return this.createInstance(impl);
-  }
-
-  private createInstance<T>(impl: Constructor<T>): T {
-    const injectTokens: string[] = Reflect.getMetadata('inject:tokens', impl) || [];
-    const paramTypes: Constructor<any>[] = Reflect.getMetadata('design:paramtypes', impl) || [];
-
-    const dependencies = paramTypes.map((paramType, index) => {
-      const injectToken = injectTokens[index];
-
-      if (injectToken) {
-        return this.resolveByToken(injectToken);
-      }
-
-      return this.resolve(paramType);
+    const paramTypes: any[] = Reflect.getMetadata('design:paramtypes', implementation) ?? [];
+    const dependencies = paramTypes.map((_, index) => {
+      const dependencyToken = Reflect.getMetadata(`inject:${index}`, implementation);
+      return this.resolve(dependencyToken);
     });
 
-    return new impl(...dependencies);
+    return new implementation(...dependencies);
   }
 }
 

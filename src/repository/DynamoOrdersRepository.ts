@@ -13,7 +13,7 @@ export class DynamoOrdersRepository implements IOrdersRepository {
     new DynamoDBClient({ region: 'us-east-1' }),
   );
 
-  constructor(@Inject('LogGateway') private readonly logGateway: ILogGateway) {}
+  constructor(@Inject('ConsoleLogGateway') private readonly logGateway: ILogGateway) {}
 
   async create(order: Order) {
     const command = new PutCommand({
