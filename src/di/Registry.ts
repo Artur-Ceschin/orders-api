@@ -1,11 +1,12 @@
 import { Constructor } from '../types/utils';
-
+import 'reflect-metadata';
 
 export class Registry {
 
   private static instance: Registry;
 
   private readonly services: Map<string, Constructor<any>> = new Map();
+  private readonly tokens: Map<string, Constructor<any>> = new Map();
 
   private constructor() {}
 
@@ -24,7 +25,15 @@ export class Registry {
       throw new Error(`${token} is already registered`);
     }
 
-    this.services.set(implementation.name, implementation);
+    this.services.set(token, implementation);
+  }
+
+  registerToken<T>(token: string, implementation: Constructor<T>) {
+    if(this.tokens.has(token)) {
+      throw new Error(`${token} is already registered`);
+    }
+
+    this.tokens.set(token, implementation);
   }
 
   resolve<T>(implementation: Constructor<T>): T {
@@ -35,13 +44,34 @@ export class Registry {
       throw new Error(`${token} was not found in the registry`);
     }
 
-    const devModeOnly = Reflect.getMetadata('devModeOnly', impl);
+    return this.createInstance(impl);
+  }
 
-    if(devModeOnly && process.env.NODE_ENV !== 'development') {
-      throw new Error(`${token} is not allowed in production`);
+  resolveByToken<T>(token: string): T {
+    const impl = this.tokens.get(token);
+
+    if(!impl) {
+      throw new Error(`${token} was not found in the registry`);
     }
 
-    return new impl();
+    return this.createInstance(impl);
+  }
+
+  private createInstance<T>(impl: Constructor<T>): T {
+    const injectTokens: string[] = Reflect.getMetadata('inject:tokens', impl) || [];
+    const paramTypes: Constructor<any>[] = Reflect.getMetadata('design:paramtypes', impl) || [];
+
+    const dependencies = paramTypes.map((paramType, index) => {
+      const injectToken = injectTokens[index];
+
+      if (injectToken) {
+        return this.resolveByToken(injectToken);
+      }
+
+      return this.resolve(paramType);
+    });
+
+    return new impl(...dependencies);
   }
 }
 

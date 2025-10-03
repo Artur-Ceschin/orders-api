@@ -39,6 +39,8 @@
     "noUncheckedSideEffectImports": true,
     "skipLibCheck": true,
     "baseUrl": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "eslint.config.mts"]

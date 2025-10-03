@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Constructor } from '../types/utils';
 import { Registry } from './Registry';
 

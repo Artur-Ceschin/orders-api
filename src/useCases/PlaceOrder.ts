@@ -1,16 +1,18 @@
 
-
+import 'reflect-metadata';
 import { Order } from '../entities/Order';
-import { IOrdersRepository } from 'Interfaces/repositories/IOrderRepository';
-import { IQueueGateway } from 'Interfaces/gateways/IQueueGateway';
-import { IEmailGateway } from 'Interfaces/gateways/IEmailGateway';
+import { IOrdersRepository } from '../Interfaces/repositories/IOrderRepository';
+import { IQueueGateway } from '../Interfaces/gateways/IQueueGateway';
+import { IEmailGateway } from '../Interfaces/gateways/IEmailGateway';
+import { Injectable } from '../di/Injectable';
+import { Inject } from '../di/Inject';
 
-
+@Injectable()
 export class PlaceOrder {
   constructor(
-    private readonly ordersRepository: IOrdersRepository,
-    private readonly queueGateway: IQueueGateway,
-    private readonly emailGateway: IEmailGateway,
+    @Inject('OrdersRepository') private readonly ordersRepository: IOrdersRepository,
+    @Inject('QueueGateway') private readonly queueGateway: IQueueGateway,
+    @Inject('EmailGateway') private readonly emailGateway: IEmailGateway,
   ) {}
 
   async execute() {
