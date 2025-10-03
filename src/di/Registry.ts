@@ -35,6 +35,12 @@ export class Registry {
       throw new Error(`${token} was not found in the registry`);
     }
 
+    const devModeOnly = Reflect.getMetadata('devModeOnly', impl);
+
+    if(devModeOnly && process.env.NODE_ENV !== 'development') {
+      throw new Error(`${token} is not allowed in production`);
+    }
+
     return new impl();
   }
 }

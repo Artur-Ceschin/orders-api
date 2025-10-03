@@ -28,6 +28,7 @@
     "@aws-sdk/client-ses": "^3.896.0",
     "@aws-sdk/client-sqs": "^3.896.0",
     "@aws-sdk/lib-dynamodb": "^3.896.0",
-    "fastify": "^5.6.1"
+    "fastify": "^5.6.1",
+    "reflect-metadata": "^0.2.2"
   }
 }

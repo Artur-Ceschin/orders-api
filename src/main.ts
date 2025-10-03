@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import fastify from 'fastify';
 import { DynamoOrdersRepository } from './repository/DynamoOrdersRepository';
 import { PlaceOrder } from './useCases/PlaceOrder';
